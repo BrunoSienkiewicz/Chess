@@ -6,6 +6,7 @@ from game import Game
 from move import Move
 from player import Player
 from state import State
+from pieces import Piece, Pawn, Queen, King, Knight, Rook, Bishop
 
 
 class Chess(Game):
@@ -13,7 +14,7 @@ class Chess(Game):
     FIRST_PLAYER_DEFAULT_NAME = 'White'
     SECOND_PLAYER_DEFAULT_NAME = 'Black'
     PRIMARY_DEFAULT_COLOR = 'white'
-    SECONDARY_DEFAULT_COLOR = 'gray'
+    SECONDARY_DEFAULT_COLOR = 'grey'
 
     def __init__(self, size = 800, margin=10, first_player: Player = None, second_player: Player = None, primary_color: p.Color = None, secondary_color: p.Color = None):
         """
@@ -29,14 +30,12 @@ class Chess(Game):
         self._primary_color = p.Color(primary_color or self.PRIMARY_DEFAULT_COLOR)
         self._secondary_color = p.Color(secondary_color or self.SECONDARY_DEFAULT_COLOR)
         self._tile_size = size//8
-        self._pices_list = ["W_pawn", "W_rook", "W_knight", "W_bishop", "W_queen", "W_king", "B_pawn", "B_rook", "B_knight", "B_bishop", "B_queen", "B_king"]
 
-        state = ChessState(self._first_player, self._second_player)
+        p.display.set_caption("Chess")
+
+        state = ChessState(self._first_player, self._second_player, self._tile_size)
 
         super().__init__(size, state)
-
-        self._pieces_images = self._get_pieces_images()
-        p.display.set_caption("Chess")
     
     def make_action(self, event: p.event.Event = None):
         super().make_action(event)
@@ -61,40 +60,60 @@ class Chess(Game):
         board = state.get_pieces_pos()
         for row in range(8):
             for col in range(8):
-                piece = board[col][row]
-                if piece != "":
-                    self._draw_piece(self._pieces_images[piece], row, col)
-
-    def _draw_piece(self, piece, row, col):
-        self._window.blit(piece, p.Rect(row * self._tile_size, col * self._tile_size, self._tile_size, self._tile_size))
+                piece: Piece = board[col][row]
+                if piece:
+                    piece.draw_piece(row, col, self._window)
 
     def _draw_complete_board(self, state: State):
         self._draw_board()
         self._draw_pieces(state)
 
-    def _get_pieces_images(self):
-        pieces_images = {}
-        for piece in self._pices_list:
-            # pieces_images[piece] = p.transform.scale(p.image.load(self._project_root / f"chess/pieces/{piece}.png"), (self._tile_size, self._tile_size))
-            pieces_images[piece] = p.image.load(self._project_root / f"chess/pieces/{piece}.png"), (self._tile_size, self._tile_size)
-        return pieces_images
 
 class ChessState(State):
-    def __init__(self, current_player, other_player):
+    def __init__(self, current_player, other_player, tile_size):
+        self._tile_size = tile_size
         self._pieces_pos = [
-            ["B_rook", "B_knight", "B_bishop", "B_queen", "B_king", "B_bishop", "B_knight", "B_rook"],
-            ["B_pawn", "B_pawn", "B_pawn", "B_pawn", "B_pawn", "B_pawn", "B_pawn", "B_pawn"],
-            ["", "", "", "", "", "", "", ""],
-            ["", "", "", "", "", "", "", ""],
-            ["", "", "", "", "", "", "", ""],
-            ["", "", "", "", "", "", "", ""],
-            ["W_pawn", "W_pawn", "W_pawn", "W_pawn", "W_pawn", "W_pawn", "W_pawn", "W_pawn"],
-            ["W_rook", "W_knight", "W_bishop", "W_queen", "W_king", "W_bishop", "W_knight", "W_rook"],
+            [Rook("rook", "black", self._tile_size, (0,0)), Knight("knight", "black", self._tile_size, (0,1)), Bishop("bishop", "black", self._tile_size, (0,2)), Queen("queen", "black", self._tile_size, (0,3)), 
+            King("king", "black", self._tile_size, (0,4)), Bishop("bishop", "black", self._tile_size, (0,5)), Knight("knight", "black", self._tile_size, (0,6)), Rook("rook", "black", self._tile_size, (0,7))],
+            [Pawn("pawn", "black", self._tile_size, (1,0)), Pawn("pawn", "black", self._tile_size, (1,1)), Pawn("pawn", "black", self._tile_size, (1,2)), Pawn("pawn", "black", self._tile_size, (1,3)), 
+            Pawn("pawn", "black", self._tile_size, (1,4)), Pawn("pawn", "black", self._tile_size, (1,5)), Pawn("pawn", "black", self._tile_size, (1,6)), Pawn("pawn", "black", self._tile_size, (1,7))],
+            [None, None, None, None, None, None, None, None],
+            [None, None, None, None, None, None, None, None],
+            [None, None, None, None, None, None, None, None],
+            [None, None, None, None, None, None, None, None],
+            [Pawn("pawn", "white", self._tile_size, (6,0)), Pawn("pawn", "white", self._tile_size, (6,1)), Pawn("pawn", "white", self._tile_size, (6,2)), Pawn("pawn", "white", self._tile_size, (6,3)),
+            Pawn("pawn", "white", self._tile_size, (6,4)), Pawn("pawn", "white", self._tile_size, (6,5)), Pawn("pawn", "white", self._tile_size, (6,6)), Pawn("pawn", "white", self._tile_size, (6,7))],
+            [Rook("rook", "white", self._tile_size, (7,0)), Knight("knight", "white", self._tile_size, (7,1)), Bishop("bishop", "white", self._tile_size, (7,2)), Queen("queen", "white", self._tile_size, (7,3)),
+            King("king", "white", self._tile_size, (7,4)), Bishop("bishop", "white", self._tile_size, (7,5)), Knight("knight", "white", self._tile_size, (7,6)), Rook("rook", "white", self._tile_size, (7,7))],
         ]
+        # self._pieces_pos = [
+        #     [Pawn("pawn", "black", self._tile_size, (1,0)), Pawn("pawn", "black", self._tile_size, (1,1)), Pawn("pawn", "black", self._tile_size, (1,2)), Pawn("pawn", "black", self._tile_size, (1,3)), 
+        #     Pawn("pawn", "black", self._tile_size, (1,4)), Pawn("pawn", "black", self._tile_size, (1,5)), Pawn("pawn", "black", self._tile_size, (1,6)), Pawn("pawn", "black", self._tile_size, (1,7))],
+        #     [Pawn("pawn", "black", self._tile_size, (1,0)), Pawn("pawn", "black", self._tile_size, (1,1)), Pawn("pawn", "black", self._tile_size, (1,2)), Pawn("pawn", "black", self._tile_size, (1,3)), 
+        #     Pawn("pawn", "black", self._tile_size, (1,4)), Pawn("pawn", "black", self._tile_size, (1,5)), Pawn("pawn", "black", self._tile_size, (1,6)), Pawn("pawn", "black", self._tile_size, (1,7))],
+        #     [None, None, None, None, None, None, None, None],
+        #     [None, None, None, None, None, None, None, None],
+        #     [None, None, None, None, None, None, None, None],
+        #     [None, None, None, None, None, None, None, None],
+        #     [Pawn("pawn", "white", self._tile_size, (6,0)), Pawn("pawn", "white", self._tile_size, (6,1)), Pawn("pawn", "white", self._tile_size, (6,2)), Pawn("pawn", "white", self._tile_size, (6,3)),
+        #     Pawn("pawn", "white", self._tile_size, (6,4)), Pawn("pawn", "white", self._tile_size, (6,5)), Pawn("pawn", "white", self._tile_size, (6,6)), Pawn("pawn", "white", self._tile_size, (6,7))],
+        #     [Pawn("pawn", "white", self._tile_size, (6,0)), Pawn("pawn", "white", self._tile_size, (6,1)), Pawn("pawn", "white", self._tile_size, (6,2)), Pawn("pawn", "white", self._tile_size, (6,3)),
+        #     Pawn("pawn", "white", self._tile_size, (6,4)), Pawn("pawn", "white", self._tile_size, (6,5)), Pawn("pawn", "white", self._tile_size, (6,6)), Pawn("pawn", "white", self._tile_size, (6,7))],
+        # ]
+
         super().__init__(current_player, other_player)
 
-    def get_pieces_pos(self):
+    def get_pieces_pos(self) -> list:
         return self._pieces_pos
+
+    def get_moves(self, row, col):
+        piece: Piece = self._pieces_pos[col][row]
+        if piece:
+            return piece.get_moves()
+
+    def make_move(self, move: Move) -> 'State':
+        new_state = move.move()
+        return new_state
 
 
 class ChessMove(Move):

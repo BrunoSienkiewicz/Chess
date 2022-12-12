@@ -20,7 +20,6 @@ class Game:
         self._size = size
         self._window = self._get_window(size)
         self._done = False
-        self._project_root = Path(__file__).parent.parent
         p.init()
 
     def play(self):
