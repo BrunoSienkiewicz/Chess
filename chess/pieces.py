@@ -27,10 +27,12 @@ class Piece():
     def set_position(self, new_position):
         self._position = new_position
     
-    def draw_piece(self, row, col, window):
-        window.blit(self._image, p.Rect(row * self._size, col * self._size, self._size, self._size))
+    def draw_piece(self, window):
+        col = self._position[0]
+        row = self._position[1]
+        window.blit(self._image, p.Rect(col * self._size, row * self._size, self._size, self._size))
 
-    def get_moves(self, state: State) -> list:
+    def get_moves(self) -> list:
         available_moves = []
         for row in range(8):
             for col in range(8):
@@ -45,6 +47,9 @@ class Piece():
 
     def _can_move_to_pos(self, col, row) -> bool:
         raise NotImplementedError
+
+    def __str__(self) -> str:
+        return f"{self._name} is on position {self._position}"
 
 
 class Pawn(Piece):

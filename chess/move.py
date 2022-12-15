@@ -13,6 +13,5 @@ class Move:
     def set_state(self, new_state):
         self._state = new_state
 
-    def make_move(self, new_state):
-        self.set_state(new_state)
-        return self._state
+    def make_move(self):
+        raise NotImplementedError

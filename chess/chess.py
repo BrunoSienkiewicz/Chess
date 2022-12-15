@@ -31,26 +31,26 @@ class Chess(Game):
         self._secondary_color = p.Color(secondary_color or self.SECONDARY_DEFAULT_COLOR)
         self._tile_size = size//8
         default_pieces_pos = [
-            [Rook("rook", "black", self._tile_size, (0,0)), Knight("knight", "black", self._tile_size, (0,1)),
-            Bishop("bishop", "black", self._tile_size, (0,2)), Queen("queen", "black", self._tile_size, (0,3)), 
-            King("king", "black", self._tile_size, (0,4)), Bishop("bishop", "black", self._tile_size, (0,5)), 
-            Knight("knight", "black", self._tile_size, (0,6)), Rook("rook", "black", self._tile_size, (0,7))],
-            [Pawn("pawn", "black", self._tile_size, (1,0)), Pawn("pawn", "black", self._tile_size, (1,1)), 
-            Pawn("pawn", "black", self._tile_size, (1,2)), Pawn("pawn", "black", self._tile_size, (1,3)), 
-            Pawn("pawn", "black", self._tile_size, (1,4)), Pawn("pawn", "black", self._tile_size, (1,5)), 
-            Pawn("pawn", "black", self._tile_size, (1,6)), Pawn("pawn", "black", self._tile_size, (1,7))],
+            [Rook("rook", "black", self._tile_size, (0,0)), Knight("knight", "black", self._tile_size, (1,0)),
+            Bishop("bishop", "black", self._tile_size, (2,0)), Queen("queen", "black", self._tile_size, (3,0)), 
+            King("king", "black", self._tile_size, (4,0)), Bishop("bishop", "black", self._tile_size, (5,0)), 
+            Knight("knight", "black", self._tile_size, (6,0)), Rook("rook", "black", self._tile_size, (7,0))],
+            [Pawn("pawn", "black", self._tile_size, (0,1)), Pawn("pawn", "black", self._tile_size, (1,1)), 
+            Pawn("pawn", "black", self._tile_size, (2,1)), Pawn("pawn", "black", self._tile_size, (3,1)), 
+            Pawn("pawn", "black", self._tile_size, (4,1)), Pawn("pawn", "black", self._tile_size, (5,1)), 
+            Pawn("pawn", "black", self._tile_size, (6,1)), Pawn("pawn", "black", self._tile_size, (7,1))],
             [None, None, None, None, None, None, None, None],
             [None, None, None, None, None, None, None, None],
             [None, None, None, None, None, None, None, None],
             [None, None, None, None, None, None, None, None],
-            [Pawn("pawn", "white", self._tile_size, (6,0)), Pawn("pawn", "white", self._tile_size, (6,1)), 
-            Pawn("pawn", "white", self._tile_size, (6,2)), Pawn("pawn", "white", self._tile_size, (6,3)),
-            Pawn("pawn", "white", self._tile_size, (6,4)), Pawn("pawn", "white", self._tile_size, (6,5)), 
-            Pawn("pawn", "white", self._tile_size, (6,6)), Pawn("pawn", "white", self._tile_size, (6,7))],
-            [Rook("rook", "white", self._tile_size, (7,0)), Knight("knight", "white", self._tile_size, (7,1)), 
-            Bishop("bishop", "white", self._tile_size, (7,2)), Queen("queen", "white", self._tile_size, (7,3)),
-            King("king", "white", self._tile_size, (7,4)), Bishop("bishop", "white", self._tile_size, (7,5)), 
-            Knight("knight", "white", self._tile_size, (7,6)), Rook("rook", "white", self._tile_size, (7,7))],
+            [Pawn("pawn", "white", self._tile_size, (0,6)), Pawn("pawn", "white", self._tile_size, (1,6)), 
+            Pawn("pawn", "white", self._tile_size, (2,6)), Pawn("pawn", "white", self._tile_size, (3,6)),
+            Pawn("pawn", "white", self._tile_size, (4,6)), Pawn("pawn", "white", self._tile_size, (5,6)), 
+            Pawn("pawn", "white", self._tile_size, (6,6)), Pawn("pawn", "white", self._tile_size, (7,6))],
+            [Rook("rook", "white", self._tile_size, (0,7)), Knight("knight", "white", self._tile_size, (1,7)), 
+            Bishop("bishop", "white", self._tile_size, (2,7)), Queen("queen", "white", self._tile_size, (3,7)),
+            King("king", "white", self._tile_size, (4,7)), Bishop("bishop", "white", self._tile_size, (5,7)), 
+            Knight("knight", "white", self._tile_size, (6,7)), Rook("rook", "white", self._tile_size, (7,7))],
         ]
 
         p.display.set_caption("Chess")
@@ -66,6 +66,7 @@ class Chess(Game):
 
     def draw_current_board_state(self, state):
         self._draw_complete_board(state)
+        print(state)
 
     # private methods
 
@@ -83,37 +84,40 @@ class Chess(Game):
 
     def _draw_pieces(self, state: State):
         board = state.get_pieces_pos()
-        for row in range(8):
-            for col in range(8):
+        for col in range(8):
+            for row in range(8):
                 piece: Piece = board[col][row]
                 if piece:
-                    piece.draw_piece(row, col, self._window)
+                    piece.draw_piece(self._window)
 
     def _draw_complete_board(self, state: State):
         self._draw_board()
         self._draw_pieces(state)
 
     def _move_piece(self):
-        location = p.mouse.get_pos()
-        col = location[0]//self._tile_size
-        row = location[1]//self._tile_size
+        col, row = self._get_mouse_pos()
         pieces_pos = self._state.get_pieces_pos()
         piece = pieces_pos[col][row]
+        print(piece)
         if piece:
-            finishing_position = self._await_piece_finishing_location()
-            move = ChessMove(self._state, finishing_position)
+            finishing_position = tuple(self._get_piece_finishing_location())
+            move = ChessMove(self._state, piece, finishing_position)
             new_state = self._state.make_move(move)
             self.set_state(new_state)
 
-    def _await_piece_finishing_location(self):
-        events = p.event.get()
-        super().make_action(events)
-        for event in events:
-            if event.type == p.MOUSEBUTTONDOWN:
-                location = p.mouse.get_pos()
-                col = location[0]//self._tile_size
-                row = location[1]//self._tile_size
-                return col, row
+    def _get_piece_finishing_location(self):
+        while not self._done:
+            events = p.event.get()
+            for event in events:
+                if event.type == p.MOUSEBUTTONDOWN:
+                    return self._get_mouse_pos()
+                super().make_action(event)
+
+    def _get_mouse_pos(self):
+        location = p.mouse.get_pos()
+        row = location[0]//self._tile_size
+        col = location[1]//self._tile_size
+        return col, row
 
 
 class ChessState(State):
@@ -141,20 +145,33 @@ class ChessState(State):
         new_state = move.make_move()
         return new_state
 
+    def __str__(self) -> str:
+        board_str = ""
+        for col in range(8):
+            for row in range(8):
+                board_str += f"{str(self._pieces_pos[col][row])}, "
+            board_str += "\n"
+        return board_str
+
 
 class ChessMove(Move):
-    def make_move(self, state: State, piece: Piece, finishing_position) -> State:
-        pieces_pos = state.get_pieces_pos()
-        starting_position = piece.get_position()
-        if starting_position == finishing_position:
-            return state
+    def __init__(self, state, piece, new_position):
+        self._piece = piece
+        super().__init__(state, new_position)
+
+    def make_move(self) -> State:
+        pieces_pos = self._state.get_pieces_pos()
+        starting_position = self._piece.get_position()
+        if starting_position == self._new_position:
+            return self._state
         col = starting_position[0]
         row = starting_position[1]
         pieces_pos[col][row] = None
-        col = finishing_position[0]
-        row = finishing_position[1]
-        pieces_pos[col][row] = piece
+        col = self._new_position[0]
+        row = self._new_position[1]
+        pieces_pos[col][row] = self._piece
+        self._piece.set_position((row, col))
         new_pieces_pos = pieces_pos
-        new_state = ChessState(state.get_current_player(), state.get_other_player(),
-        state.get_tile_size(), new_pieces_pos)
-        return super().make_move(new_state)
+        new_state = ChessState(self._state.get_current_player(), self._state.get_other_player(),
+        self._state.get_tile_size(), new_pieces_pos)
+        return new_state
