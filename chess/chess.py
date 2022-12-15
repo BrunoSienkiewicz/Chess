@@ -162,8 +162,6 @@ class ChessMove(Move):
     def make_move(self) -> State:
         pieces_pos = self._state.get_pieces_pos()
         starting_position = self._piece.get_position()
-        if starting_position == self._new_position:
-            return self._state
         col = starting_position[0]
         row = starting_position[1]
         pieces_pos[row][col] = None

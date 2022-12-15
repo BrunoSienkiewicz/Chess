@@ -1,0 +1,14 @@
+{
+    "python.testing.pytestArgs": [
+        "chess"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        "./chess",
+        "-p",
+        "test_*.py"
+    ]
+}

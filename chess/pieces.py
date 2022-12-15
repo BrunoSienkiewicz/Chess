@@ -18,6 +18,9 @@ class Piece():
         self._size = size
         self._in_game = True
 
+    def get_type(self):
+        return self._type
+
     def get_position(self):
         return self._position
 
@@ -34,10 +37,10 @@ class Piece():
 
     def get_moves(self) -> list:
         available_moves = []
-        for row in range(8):
-            for col in range(8):
+        for col in range(8):
+            for row in range(8):
                 if self._can_move_to_pos(col, row):
-                    available_moves.append(col, row)
+                    available_moves.append([col, row])
         return available_moves
 
     def is_in_game(self):
@@ -50,6 +53,11 @@ class Piece():
 
     def __str__(self) -> str:
         return f"{self._name} is on position {self._position}"
+
+
+class Super_Piece(Piece):
+    def _can_move_to_pos(self, col, row) -> bool:
+        return True
 
 
 class Pawn(Piece):
