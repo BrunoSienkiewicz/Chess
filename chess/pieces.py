@@ -17,6 +17,15 @@ class Piece():
         self._image = p.transform.scale(p.image.load(self._project_root / f"chess/pieces/{self._name}.png"), (size, size))
         self._size = size
         self._in_game = True
+
+    def get_position(self):
+        return self._position
+
+    def get_color(self):
+        return self._color
+
+    def set_position(self, new_position):
+        self._position = new_position
     
     def draw_piece(self, row, col, window):
         window.blit(self._image, p.Rect(row * self._size, col * self._size, self._size, self._size))
@@ -25,8 +34,8 @@ class Piece():
         available_moves = []
         for row in range(8):
             for col in range(8):
-                if self._can_move_to_pos(row, col):
-                    available_moves.append(row, col)
+                if self._can_move_to_pos(col, row):
+                    available_moves.append(col, row)
         return available_moves
 
     def is_in_game(self):
@@ -34,35 +43,35 @@ class Piece():
 
     # private methods
 
-    def _can_move_to_pos(self, row, col) -> bool:
+    def _can_move_to_pos(self, col, row) -> bool:
         raise NotImplementedError
 
 
 class Pawn(Piece):
-    def _can_move_to_pos(self, row, col) -> bool:
+    def _can_move_to_pos(self, col, row) -> bool:
         return True
 
 
 class Rook(Piece):
-    def _can_move_to_pos(self, row, col) -> bool:
+    def _can_move_to_pos(self, col, row) -> bool:
         return True
 
 
 class Bishop(Piece):
-    def _can_move_to_pos(self, row, col) -> bool:
+    def _can_move_to_pos(self, col, row) -> bool:
         return True
 
 
 class Queen(Piece):
-    def _can_move_to_pos(self, row, col) -> bool:
+    def _can_move_to_pos(self, col, row) -> bool:
         return True
 
 
 class King(Piece):
-    def _can_move_to_pos(self, row, col) -> bool:
+    def _can_move_to_pos(self, col, row) -> bool:
         return True
 
 
 class Knight(Piece):
-    def _can_move_to_pos(self, row, col) -> bool:
+    def _can_move_to_pos(self, col, row) -> bool:
         return True

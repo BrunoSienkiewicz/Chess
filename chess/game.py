@@ -104,6 +104,9 @@ class Game:
         """
         return self._state
 
+    def set_state(self, new_state: State):
+        self._state = new_state
+
     def __str__(self) -> str:
         """
         Returns:
