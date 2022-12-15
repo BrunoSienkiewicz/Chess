@@ -166,7 +166,7 @@ class ChessMove(Move):
             return self._state
         col = starting_position[0]
         row = starting_position[1]
-        pieces_pos[col][row] = None
+        pieces_pos[row][col] = None
         col = self._new_position[0]
         row = self._new_position[1]
         pieces_pos[col][row] = self._piece
