@@ -16,7 +16,7 @@ class Chess(Game):
     PRIMARY_DEFAULT_COLOR = 'white'
     SECONDARY_DEFAULT_COLOR = 'grey'
 
-    def __init__(self, size = 800, margin=10, first_player: Player = None, second_player: Player = None, primary_color: p.Color = None, secondary_color: p.Color = None):
+    def __init__(self, size = 800, margin=200, first_player: Player = None, second_player: Player = None, primary_color: p.Color = None, secondary_color: p.Color = None):
         """
         Initializes game.
 
@@ -25,8 +25,8 @@ class Chess(Game):
             first_player: the player that will go first (if None is passed, a player will be created)
             second_player: the player that will go second (if None is passed, a player will be created)
         """
-        self._first_player = first_player or Player(self.FIRST_PLAYER_DEFAULT_NAME)
-        self._second_player = second_player or Player(self.SECOND_PLAYER_DEFAULT_NAME)
+        self._first_player = first_player or Player(self.FIRST_PLAYER_DEFAULT_NAME, 'white')
+        self._second_player = second_player or Player(self.SECOND_PLAYER_DEFAULT_NAME, 'black')
         self._primary_color = p.Color(primary_color or self.PRIMARY_DEFAULT_COLOR)
         self._secondary_color = p.Color(secondary_color or self.SECONDARY_DEFAULT_COLOR)
         self._tile_size = size//8
@@ -57,7 +57,7 @@ class Chess(Game):
 
         state = ChessState(self._first_player, self._second_player, self._tile_size, default_pieces_pos)
 
-        super().__init__(size, state)
+        super().__init__(size, margin, state)
     
     def make_action(self, event: p.event.Event = None):
         if event.type == p.MOUSEBUTTONDOWN:

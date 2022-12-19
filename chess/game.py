@@ -9,7 +9,7 @@ from state import State
 
 class Game:
     """Game interface."""
-    def __init__(self, size, state: State):
+    def __init__(self, size, margin, state: State):
         """
         Initializes game.
 
@@ -18,7 +18,8 @@ class Game:
         """
         self._state = state
         self._size = size
-        self._window = self._get_window(size)
+        self._margin = margin
+        self._window = self._get_window(size, margin)
         self._done = False
         p.init()
 
@@ -116,9 +117,9 @@ class Game:
 
     #private methods
 
-    def _get_window(self, size):
+    def _get_window(self, size, margin):
         """
         Returns:
             Window of given size
         """
-        return p.display.set_mode((size, size))
+        return p.display.set_mode((size + margin, size))
