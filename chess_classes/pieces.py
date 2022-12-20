@@ -1,10 +1,11 @@
+import context
 from pathlib import Path
 import pygame as p
 from typing import Dict, Iterable, List, Optional, Tuple
-from game import Game
-from move import Move
-from player import Player
-from state import State
+from chess_classes.game import Game
+from chess_classes.move import Move
+from chess_classes.player import Player
+from chess_classes.state import State
 
 
 class Piece():
@@ -21,7 +22,7 @@ class Piece():
         self._position = position
         self._starting_position = position
         self._name = f"{color[0]}_{type}"
-        self._image = p.transform.scale(p.image.load(self._project_root / f"chess/pieces/{self._name}.png"), (size, size))
+        self._image = p.transform.scale(p.image.load(self._project_root / f"pieces/{self._name}.png"), (size, size))
         self._size = size
         self._in_game = True
         self._points = points

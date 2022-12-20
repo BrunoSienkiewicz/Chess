@@ -1,3 +1,6 @@
+import context
+
+
 class Move:
     """A base class for classes that represent moves in games"""
     def __init__(self, state , new_position):

@@ -1,3 +1,6 @@
+import context
+
+
 class Player:
     """A class that represents a player in a game"""
     def __init__(self, name: str, color: str, score: int=0) -> None:

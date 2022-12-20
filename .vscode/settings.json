@@ -1,13 +1,13 @@
 {
     "python.testing.pytestArgs": [
-        "chess"
+        "test_chess"
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
     "python.testing.unittestArgs": [
         "-v",
         "-s",
-        "./chess",
+        "./test_chess",
         "-p",
         "test_*.py"
     ]

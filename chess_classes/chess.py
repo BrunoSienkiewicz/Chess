@@ -1,12 +1,13 @@
 # pygame documentation https://www.pygame.org/docs/
+import context
 from pathlib import Path
 import pygame as p
 from typing import Dict, Iterable, List, Optional, Tuple
-from game import Game
-from move import Move
-from player import Player
-from state import State
-from pieces import Piece, Pawn, Queen, King, Knight, Rook, Bishop
+from chess_classes.game import Game
+from chess_classes.move import Move
+from chess_classes.player import Player
+from chess_classes.state import State
+from chess_classes.pieces import Piece, Pawn, Queen, King, Knight, Rook, Bishop
 
 
 class Chess(Game):

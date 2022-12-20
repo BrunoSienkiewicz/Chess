@@ -1,10 +1,11 @@
+import context
 from pathlib import Path
 import pygame as p
 import sys
 from typing import Iterable, Optional
-from move import Move
-from player import Player
-from state import State
+from chess_classes.move import Move
+from chess_classes.player import Player
+from chess_classes.state import State
 
 
 class Game:
