@@ -1,4 +1,4 @@
-import context
+import chess_classes.context
 
 
 class Move:

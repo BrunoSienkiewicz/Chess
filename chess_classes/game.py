@@ -1,4 +1,4 @@
-import context
+import chess_classes.context
 from pathlib import Path
 import pygame as p
 import sys

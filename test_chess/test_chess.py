@@ -1,5 +1,5 @@
 # https://en.wikipedia.org/wiki/Rules_of_chess
-import context
+import test_chess.context
 import pygame as p
 from typing import Iterable, Optional
 from chess_classes.pieces import Piece, Pawn, Queen, King, Knight, Rook, Bishop, Super_Piece

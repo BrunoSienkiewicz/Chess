@@ -1,5 +1,5 @@
 # pygame documentation https://www.pygame.org/docs/
-import context
+import chess_classes.context
 from pathlib import Path
 import pygame as p
 from typing import Dict, Iterable, List, Optional, Tuple

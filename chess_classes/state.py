@@ -1,5 +1,5 @@
+import chess_classes.context
 from typing import Iterable, Optional
-
 from chess_classes.move import Move
 from chess_classes.player import Player
 
