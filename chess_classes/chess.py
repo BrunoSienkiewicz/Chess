@@ -30,6 +30,7 @@ class Chess(Game):
         self._second_player = second_player or Player(self.SECOND_PLAYER_DEFAULT_NAME, 'black')
         self._primary_color = p.Color(primary_color or self.PRIMARY_DEFAULT_COLOR)
         self._secondary_color = p.Color(secondary_color or self.SECONDARY_DEFAULT_COLOR)
+        self._move_color = p.Color('darkgray')
         self._tile_size = size//8
         default_pieces_pos = [
             [Rook("rook", "black", self._tile_size, (0,0)), Knight("knight", "black", self._tile_size, (1,0)),
@@ -67,7 +68,8 @@ class Chess(Game):
 
     def draw_current_board_state(self, state):
         self._draw_complete_board(state)
-        print(state)
+        p.display.flip()
+        # print(state)
 
     # private methods
 
@@ -81,7 +83,6 @@ class Chess(Game):
                     color = self._secondary_color
                 p.draw.rect(self._window, color, (row * self._tile_size,
                 col * self._tile_size, self._tile_size, self._tile_size))
-        p.display.flip()
 
     def _draw_pieces(self, state: State):
         board = state.get_pieces_pos()
@@ -99,11 +100,18 @@ class Chess(Game):
         col, row = self._get_mouse_pos()
         pieces_pos = self._state.get_pieces_pos()
         piece = pieces_pos[col][row]
-        print(piece)
         if piece:
+            available_moves = piece.get_moves(pieces_pos)
+            self._draw_possible_moves(available_moves)
+            # print(available_moves)
             finishing_position = tuple(self._get_piece_finishing_location())
-            move = ChessMove(self._state, piece, finishing_position)
-            new_state = self._state.make_move(move)
+            finishing_position = tuple(reversed(finishing_position))
+            if finishing_position in available_moves:
+                move = ChessMove(self._state, piece, tuple(reversed(finishing_position)))
+                new_state = self._state.make_move(move)
+            else:
+                # print(False)
+                new_state = self._state
             self.set_state(new_state)
 
     def _get_piece_finishing_location(self):
@@ -119,6 +127,15 @@ class Chess(Game):
         row = location[0]//self._tile_size
         col = location[1]//self._tile_size
         return col, row
+
+    def _draw_possible_moves(self, available_moves):
+        for move in available_moves:
+            col = move[0]
+            row = move[1]
+            p.draw.circle(self._window, self._move_color, 
+            (col * self._tile_size + self._tile_size/2, row * self._tile_size + self._tile_size/2),
+            self._tile_size/4)
+        p.display.flip()
 
 
 class ChessState(State):

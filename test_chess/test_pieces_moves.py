@@ -239,15 +239,225 @@ def test_knight_moves():
 
 def test_knight_blocked_moves():
     knight = Knight('knight', 'black', 100, (3,3))
+    w_knight = Knight('knight', 'white', 100, (3,3))
     pieces_pos = [
         [None, None, None, None, None, None, None, None],
         [None, None, None, None, None, None, None, None],
         [None, knight, None, None, None, None, None, None],
         [None, None, None, knight, None, None, None, None],
-        [None, None, None, None, None, knight, None, None],
+        [None, w_knight, None, None, None, knight, None, None],
         [None, None, None, None, None, None, None, None],
         [None, None, None, None, None, None, None, None],
         [None, None, None, None, None, None, None, None]
     ]
     moves_list = [(4,5),(2,1),(2,5),(1,4),(4,1),(5,2)]
     assert knight.get_moves(pieces_pos) == moves_list
+
+
+def test_knight_corner_moves():
+    knight = Knight('knight', 'black', 100, (0,7))
+    pieces_pos = [
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [knight, None, None, None, None, None, None, None]
+    ]
+    moves_list = [(1,5),(2,6)]
+    assert knight.get_moves(pieces_pos) == moves_list
+
+
+def test_rook_moves():
+    rook = Rook('rook', 'black', 100, (3,3))
+    pieces_pos = [
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, rook, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None]
+    ]
+    moves_list = [
+                    (4,3),(5,3),(6,3),(7,3),
+                    (2,3),(1,3),(0,3),
+                    (3,4),(3,5),(3,6),(3,7),
+                    (3,2),(3,1),(3,0),
+                ]
+    assert rook.get_moves(pieces_pos) == moves_list
+
+
+def test_rook_blocked_moves():
+    rook = Rook('rook', 'black', 100, (3,3))
+    w_rook = Rook('rook', 'white', 100, (3,3))
+    pieces_pos = [
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, w_rook, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, rook, None, rook, rook, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, rook, None, None, None, None]
+    ]
+    moves_list = [
+                    (2,3),
+                    (3,4),(3,5),(3,6),
+                    (3,2),(3,1),
+                ]
+    assert rook.get_moves(pieces_pos) == moves_list
+
+
+def test_rook_corner_moves():
+    rook = Rook('rook', 'black', 100, (0,7))
+    pieces_pos = [
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [rook, None, None, None, None, None, None, None]
+    ]
+    moves_list = [
+                    (1,7),(2,7),(3,7),(4,7),(5,7),(6,7),(7,7),
+                    (0,6),(0,5),(0,4),(0,3),(0,2),(0,1),(0,0)
+                ]
+    assert rook.get_moves(pieces_pos) == moves_list
+
+
+def test_bishop_moves():
+    bishop = Bishop('bishop', 'black', 100, (3,3))
+    pieces_pos = [
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, bishop, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None]
+    ]
+    moves_list = [
+                    (4,4),(5,5),(6,6),(7,7),
+                    (2,4),(1,5),(0,6),
+                    (4,2),(5,1),(6,0),
+                    (2,2),(1,1),(0,0)
+                ]
+    assert bishop.get_moves(pieces_pos) == moves_list
+
+
+def test_bishop_blocked_moves():
+    bishop = Bishop('bishop', 'black', 100, (3,3))
+    w_bishop = Bishop('bishop', 'white', 100, (3,3))
+    pieces_pos = [
+        [None, None, None, None, None, None, None, None],
+        [None, w_bishop, None, None, None, None, None, None],
+        [None, None, None, None, bishop, None, None, None],
+        [None, None, None, bishop, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, bishop, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None]
+    ]
+    moves_list = [
+                    (4,4),(5,5),(6,6),(7,7),
+                    (2,4),
+                    (2,2),(1,1)
+                ]
+    assert bishop.get_moves(pieces_pos) == moves_list
+
+
+def test_queen_moves():
+    queen = Queen('queen', 'black', 100, (3,3))
+    pieces_pos = [
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, queen, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None]
+    ]
+    moves_list = [
+                    (4,3),(5,3),(6,3),(7,3),
+                    (2,3),(1,3),(0,3),
+                    (3,4),(3,5),(3,6),(3,7),
+                    (3,2),(3,1),(3,0),
+                    (4,4),(5,5),(6,6),(7,7),
+                    (2,4),(1,5),(0,6),
+                    (4,2),(5,1),(6,0),
+                    (2,2),(1,1),(0,0)
+                ]
+    assert queen.get_moves(pieces_pos) == moves_list
+
+
+def test_queen_blocked_moves():
+    queen = Queen('queen', 'black', 100, (3,3))
+    w_queen = Queen('queen', 'white', 100, (3,3))
+    pieces_pos = [
+        [None, None, None, None, None, None, None, None],
+        [None, w_queen, None, w_queen, None, None, None, None],
+        [None, None, None, None, queen, None, None, None],
+        [None, None, None, queen, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, queen, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, queen, None, None, None, None]
+    ]
+    moves_list = [
+                    (4,3),(5,3),(6,3),(7,3),
+                    (2,3),(1,3),(0,3),
+                    (3,4),(3,5),(3,6),
+                    (3,2),(3,1),
+                    (4,4),(5,5),(6,6),(7,7),
+                    (2,4),
+                    (2,2),(1,1)
+                ]
+    assert queen.get_moves(pieces_pos) == moves_list
+
+
+def test_king_moves():
+    king = King('king', 'black', 100, (3,3))
+    pieces_pos = [
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, king, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None]
+    ]
+    moves_list = [
+                    (4,3),(2,3),(3,4),(3,2),
+                    (4,4),(2,4),(4,2),(2,2)
+                ]
+    assert king.get_moves(pieces_pos) == moves_list
+
+
+def test_king_blocked_moves():
+    king = King('king', 'black', 100, (3,3))
+    w_pawn = Pawn('pawn', 'white', 100, (3,3))
+    b_pawn = Pawn('pawn', 'black', 100, (3,3))
+    pieces_pos = [
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, w_pawn, None, None, None, None],
+        [None, None, b_pawn, king, None, None, None, None],
+        [None, None, b_pawn, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None]
+    ]
+    moves_list = [
+                    (4,3),(3,4),(3,2),
+                    (4,4),(4,2),(2,2)
+                ]
+    assert king.get_moves(pieces_pos) == moves_list
