@@ -100,7 +100,7 @@ class Chess(Game):
         col, row = self._get_mouse_pos()
         pieces_pos = self._state.get_pieces_pos()
         piece = pieces_pos[col][row]
-        if piece:
+        if piece and piece.get_color() == self._state.get_current_player().color():
             available_moves = piece.get_moves(pieces_pos)
             self._draw_possible_moves(available_moves)
             # print(available_moves)
@@ -109,6 +109,7 @@ class Chess(Game):
             if finishing_position in available_moves:
                 move = ChessMove(self._state, piece, tuple(reversed(finishing_position)))
                 new_state = self._state.make_move(move)
+                new_state.swap_players()
             else:
                 # print(False)
                 new_state = self._state

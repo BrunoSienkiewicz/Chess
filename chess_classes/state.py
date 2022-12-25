@@ -64,6 +64,14 @@ class State:
         """
         return [self._current_player, self._other_player]
 
+    def swap_players(self):
+        """
+        Swaps current_player with other_player
+        """
+        players = self.get_players()
+        self._current_player = players[1]
+        self._other_player = players[0]
+
     def __str__(self) -> str:
         """
         Returns:
