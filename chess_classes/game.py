@@ -16,6 +16,9 @@ class Game:
 
         Parameters:
             state: initial game state
+            size: size of the window
+            margin: margin added to the window
+            state: state of the game
         """
         self._state = state
         self._size = size
@@ -29,8 +32,10 @@ class Game:
         Launches game.
         """
         while not self._done:
+            # get all events
             events = p.event.get()
             for event in events:
+                # make action for each event
                 self.make_action(event)
                 self.draw_current_board_state(self._state)
             p.display.flip()
@@ -50,6 +55,7 @@ class Game:
         """
         if event == None:
             return None
+        # quits game if quit button is pressed
         elif event.type == p.QUIT:
             self._done = True
             sys.exit()
@@ -107,6 +113,9 @@ class Game:
         return self._state
 
     def set_state(self, new_state: State):
+        """
+        Sets state of the game to given state.
+        """
         self._state = new_state
 
     def __str__(self) -> str:

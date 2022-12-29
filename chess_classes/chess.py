@@ -17,14 +17,21 @@ class Chess(Game):
     PRIMARY_DEFAULT_COLOR = 'white'
     SECONDARY_DEFAULT_COLOR = 'grey'
 
-    def __init__(self, size = 800, margin=200, first_player: Player = None, second_player: Player = None, primary_color: p.Color = None, secondary_color: p.Color = None):
+    def __init__(
+        self, size = 800, margin=200, 
+        first_player: Player = None, second_player: Player = None, 
+        primary_color: p.Color = None, secondary_color: p.Color = None
+    ):
         """
         Initializes game.
 
         Parameters:
             size: the size of the games window
+            margin: size of margin where players are displayed
             first_player: the player that will go first (if None is passed, a player will be created)
             second_player: the player that will go second (if None is passed, a player will be created)
+            primary_color: main color of the board (if None is passed, a color will be created)
+            secondary_color: secondary color of the board (if None is passed, a color will be created)
         """
         self._first_player = first_player or Player(self.FIRST_PLAYER_DEFAULT_NAME, 'white')
         self._second_player = second_player or Player(self.SECOND_PLAYER_DEFAULT_NAME, 'black')
@@ -62,18 +69,27 @@ class Chess(Game):
         super().__init__(size, margin, state)
     
     def make_action(self, event: p.event.Event = None):
+        """
+        Makes action on given event.
+        """
         if event.type == p.MOUSEBUTTONDOWN:
             self._move_piece()
         super().make_action(event)
 
     def draw_current_board_state(self, state):
-        self._draw_complete_board(state)
+        """
+        Draws given board state on the screen.
+        """
+        self._draw_board()
+        self._draw_pieces(state)
         p.display.flip()
-        # print(state)
 
     # private methods
 
     def _draw_board(self):
+        """
+        Draws empty chess board on screen.
+        """
         self._window.fill(self._primary_color)
         for row in range(8):
             for col in range(8):
@@ -85,6 +101,9 @@ class Chess(Game):
                 col * self._tile_size, self._tile_size, self._tile_size))
 
     def _draw_pieces(self, state: State):
+        """
+        Draws pieces on the board on given positions.
+        """
         board = state.get_pieces_pos()
         for col in range(8):
             for row in range(8):
@@ -92,30 +111,43 @@ class Chess(Game):
                 if piece:
                     piece.draw_piece(self._window)
 
-    def _draw_complete_board(self, state: State):
-        self._draw_board()
-        self._draw_pieces(state)
-
     def _move_piece(self):
+        """
+        Moves piece to mouse position.
+        """
+
+        # get mouse position and check for pieces on this position
         col, row = self._get_mouse_pos()
         pieces_pos = self._state.get_pieces_pos()
         piece = pieces_pos[col][row]
+
+        # check if piece is on mouse position and belongs to current player
         if piece and piece.get_color() == self._state.get_current_player().color():
+            # check for available moves
             available_moves = piece.get_moves(pieces_pos)
             self._draw_possible_moves(available_moves)
-            # print(available_moves)
+
+            # get finishing position given by player
             finishing_position = tuple(self._get_piece_finishing_location())
             finishing_position = tuple(reversed(finishing_position))
+
+            # check if given finishing position is in available moves
             if finishing_position in available_moves:
+                # make move
                 move = ChessMove(self._state, piece, tuple(reversed(finishing_position)))
                 new_state = self._state.make_move(move)
                 new_state.swap_players()
             else:
-                # print(False)
                 new_state = self._state
+
+            # update state
             self.set_state(new_state)
 
     def _get_piece_finishing_location(self):
+        """
+        Returns:
+            Players desired piece position.
+        """
         while not self._done:
             events = p.event.get()
             for event in events:
@@ -124,12 +156,19 @@ class Chess(Game):
                 super().make_action(event)
 
     def _get_mouse_pos(self):
+        """
+        Returns:
+            players mouse position 
+        """
         location = p.mouse.get_pos()
         row = location[0]//self._tile_size
         col = location[1]//self._tile_size
         return col, row
 
     def _draw_possible_moves(self, available_moves):
+        """
+        Draws available moves of given piece on the board.
+        """
         for move in available_moves:
             col = move[0]
             row = move[1]
