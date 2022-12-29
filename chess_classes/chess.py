@@ -148,7 +148,7 @@ class Chess(Game):
         Returns:
             Players desired piece position.
         """
-        while not self._done:
+        while not self._state.done():
             events = p.event.get()
             for event in events:
                 if event.type == p.MOUSEBUTTONDOWN:
@@ -182,8 +182,19 @@ class ChessState(State):
     def __init__(self, current_player, other_player, tile_size, pieces_pos):
         self._tile_size = tile_size
         self._pieces_pos = pieces_pos
+        self._done = False
+
+        self._in_check = False
+        self._pins = []
+        self._checks = []
 
         super().__init__(current_player, other_player)
+
+    def done(self):
+        return self._done
+
+    def in_check(self):
+        return self._in_check
 
     def get_tile_size(self):
         return self._tile_size

@@ -24,14 +24,13 @@ class Game:
         self._size = size
         self._margin = margin
         self._window = self._get_window(size, margin)
-        self._done = False
         p.init()
 
     def play(self):
         """
         Launches game.
         """
-        while not self._done:
+        while not self._state.done():
             # get all events
             events = p.event.get()
             for event in events:

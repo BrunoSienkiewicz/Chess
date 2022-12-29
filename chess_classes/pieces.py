@@ -67,6 +67,23 @@ class Piece():
             return False
         return True
 
+    def _direction_moves(self, col, row, directions, rang, pieces_pos):
+        available_moves = []
+        for direction in directions:
+            for i in rang:
+                move_col = col+direction[0]*i
+                move_row = row+direction[1]*i
+                if self._in_bounds(move_col, move_row):
+                    piece = pieces_pos[move_row][move_col]
+                    if piece:
+                        piece_color = piece.get_color()
+                        if piece_color != self._color:
+                            available_moves.append((move_col,move_row))
+                        break
+                    else:
+                        available_moves.append((move_col,move_row))
+        return available_moves
+
     def __str__(self) -> str:
         return f"{self._name} is on position {self._position}"
 
@@ -124,20 +141,8 @@ class Rook(Piece):
         col = self._position[0]
         row = self._position[1]
         directions = [(1,0),(-1,0),(0,1),(0,-1)]
-        available_moves = []
-        for direction in directions:
-            for i in range(1,8):
-                move_col = col+direction[0]*i
-                move_row = row+direction[1]*i
-                if self._in_bounds(move_col, move_row):
-                    piece = pieces_pos[move_row][move_col]
-                    if piece:
-                        piece_color = piece.get_color()
-                        if piece_color != self._color:
-                            available_moves.append((move_col,move_row))
-                        break
-                    else:
-                        available_moves.append((move_col,move_row))
+        rang = [1,2,3,4,5,6,7]
+        available_moves = self._direction_moves(col, row, directions, rang, pieces_pos)
         return available_moves
 
 
@@ -149,20 +154,8 @@ class Bishop(Piece):
         col = self._position[0]
         row = self._position[1]
         directions = [(1,1),(-1,1),(1,-1),(-1,-1)]
-        available_moves = []
-        for direction in directions:
-            for i in range(1,8):
-                move_col = col+direction[0]*i
-                move_row = row+direction[1]*i
-                if self._in_bounds(move_col, move_row):
-                    piece = pieces_pos[move_row][move_col]
-                    if piece:
-                        piece_color = piece.get_color()
-                        if piece_color != self._color:
-                            available_moves.append((move_col,move_row))
-                        break
-                    else:
-                        available_moves.append((move_col,move_row))
+        rang = [1,2,3,4,5,6,7]
+        available_moves = self._direction_moves(col, row, directions, rang, pieces_pos)
         return available_moves
 
 
@@ -177,20 +170,8 @@ class Queen(Piece):
             (1,0),(-1,0),(0,1),(0,-1),
             (1,1),(-1,1),(1,-1),(-1,-1)
         ]
-        available_moves = []
-        for direction in directions:
-            for i in range(1,8):
-                move_col = col+direction[0]*i
-                move_row = row+direction[1]*i
-                if self._in_bounds(move_col, move_row):
-                    piece = pieces_pos[move_row][move_col]
-                    if piece:
-                        piece_color = piece.get_color()
-                        if piece_color != self._color:
-                            available_moves.append((move_col,move_row))
-                        break
-                    else:
-                        available_moves.append((move_col,move_row))
+        rang = [1,2,3,4,5,6,7]
+        available_moves = self._direction_moves(col, row, directions, rang, pieces_pos)
         return available_moves
 
 
@@ -202,18 +183,8 @@ class King(Piece):
             (1,0),(-1,0),(0,1),(0,-1),
             (1,1),(-1,1),(1,-1),(-1,-1)
         ]
-        available_moves = []
-        for direction in directions:
-            move_col = col+direction[0]
-            move_row = row+direction[1]
-            if self._in_bounds(move_col, move_row):
-                piece = pieces_pos[move_row][move_col]
-                if piece:
-                    piece_color = piece.get_color()
-                    if piece_color != self._color:
-                        available_moves.append((move_col,move_row))
-                else:
-                    available_moves.append((move_col,move_row))
+        rang = [1]
+        available_moves = self._direction_moves(col, row, directions, rang, pieces_pos)
         return available_moves
 
 
