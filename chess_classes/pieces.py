@@ -87,6 +87,14 @@ class Piece():
     def __str__(self) -> str:
         return f"{self._name} is on position {self._position}"
 
+    def __deepcopy__(self, memo):
+        return Piece(self._type, self._color, 
+            self._size, self._position, self._points)
+
+    def __copy__(self, memo):
+        return Piece(self._type, self._color, 
+            self._size, self._position, self._points)
+
 
 class Super_Piece(Piece):
     pass

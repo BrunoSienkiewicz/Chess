@@ -3,6 +3,7 @@ import chess_classes.context
 from pathlib import Path
 import pygame as p
 from typing import Dict, Iterable, List, Optional, Tuple
+from copy import deepcopy, copy
 from chess_classes.game import Game
 from chess_classes.move import Move
 from chess_classes.player import Player
@@ -82,6 +83,7 @@ class Chess(Game):
         """
         self._draw_board()
         self._draw_pieces(state)
+        print(state)
         p.display.flip()
 
     # private methods
@@ -105,9 +107,9 @@ class Chess(Game):
         Draws pieces on the board on given positions.
         """
         board = state.get_pieces_pos()
-        for col in range(8):
-            for row in range(8):
-                piece: Piece = board[col][row]
+        for row in range(8):
+            for col in range(8):
+                piece: Piece = board[row][col]
                 if piece:
                     piece.draw_piece(self._window)
 
@@ -118,30 +120,29 @@ class Chess(Game):
 
         # get mouse position and check for pieces on this position
         col, row = self._get_mouse_pos()
+        print(col, row)
         pieces_pos = self._state.get_pieces_pos()
-        piece = pieces_pos[col][row]
+        piece = pieces_pos[row][col]
 
         # check if piece is on mouse position and belongs to current player
         if piece and piece.get_color() == self._state.get_current_player().color():
             # check for available moves
-            available_moves = piece.get_moves(pieces_pos)
+            available_moves = self._state.get_moves(col,row)
             self._draw_possible_moves(available_moves)
 
             # get finishing position given by player
             finishing_position = tuple(self._get_piece_finishing_location())
-            finishing_position = tuple(reversed(finishing_position))
 
             # check if given finishing position is in available moves
             if finishing_position in available_moves:
+                print("xddd")
                 # make move
-                move = ChessMove(self._state, piece, tuple(reversed(finishing_position)))
+                move = ChessMove(self._state, piece, finishing_position)
                 new_state = self._state.make_move(move)
                 new_state.swap_players()
-            else:
-                new_state = self._state
 
-            # update state
-            self.set_state(new_state)
+                # update state
+                self.set_state(new_state)
 
     def _get_piece_finishing_location(self):
         """
@@ -161,8 +162,8 @@ class Chess(Game):
             players mouse position 
         """
         location = p.mouse.get_pos()
-        row = location[0]//self._tile_size
-        col = location[1]//self._tile_size
+        col = location[0]//self._tile_size
+        row = location[1]//self._tile_size
         return col, row
 
     def _draw_possible_moves(self, available_moves):
@@ -180,15 +181,12 @@ class Chess(Game):
 
 class ChessState(State):
     def __init__(self, current_player, other_player, tile_size, pieces_pos):
+        self._current_player = current_player
+        self._other_player = other_player
         self._tile_size = tile_size
         self._pieces_pos = pieces_pos
         self._done = False
-
-        self._in_check = False
-        self._pins = []
-        self._checks = []
-
-        super().__init__(current_player, other_player)
+        self._in_check = self.is_in_check()
 
     def done(self):
         return self._done
@@ -202,10 +200,43 @@ class ChessState(State):
     def get_pieces_pos(self) -> list:
         return self._pieces_pos
 
-    def get_moves(self, row, col):
-        piece: Piece = self._pieces_pos[col][row]
+    def set_in_check(self, in_check):
+        self._in_check = in_check
+
+    def is_in_check(self):
+        king_pos = self.get_current_player_king_pos()
+        for row in range(8):
+            for col in range(8):
+                pieces_pos = self._pieces_pos
+                piece = self._pieces_pos[row][col]
+                if piece:
+                    player_color = self.get_current_player().color()
+                    piece_moves = piece.get_moves(pieces_pos)
+                    if piece.get_color() != player_color and king_pos in piece_moves:
+                        return True
+        return False
+
+    def get_current_player_king_pos(self):
+        for row in range(8):
+            for col in range(8):
+                piece = self._pieces_pos[row][col]
+                player_color = self.get_current_player().color()
+                if piece:
+                    if piece.get_type() == 'king' and piece.get_color() == player_color:
+                        return col, row
+
+    def get_moves(self, col, row):
+        piece: Piece = self._pieces_pos[row][col]
         if piece:
-            return piece.get_moves()
+            moves = piece.get_moves(self._pieces_pos)
+            for move in moves:
+                simulated_pieces_pos = deepcopy(self._pieces_pos)
+                simulated_piece = deepcopy(piece)
+                simulated_state = ChessState(self._current_player, self._other_player, self._tile_size, simulated_pieces_pos)
+                simulated_state = ChessMove(simulated_state, simulated_piece, move).make_move()
+                if simulated_state.is_in_check():
+                    moves.remove(move)
+            return moves
 
     def set_pieces_pos(self, new_pieces_pos):
         self._pieces_pos = new_pieces_pos
@@ -216,11 +247,15 @@ class ChessState(State):
 
     def __str__(self) -> str:
         board_str = ""
-        for col in range(8):
-            for row in range(8):
-                board_str += f"{str(self._pieces_pos[col][row])}, "
+        for row in range(8):
+            for col in range(8):
+                board_str += f"{str(self._pieces_pos[row][col])}, "
             board_str += "\n"
         return board_str
+
+    def __deepcopy__(self, memo):
+        return ChessState(self._current_player, self._other_player, 
+            self._tile_size, self._pieces_pos)
 
 
 class ChessMove(Move):
@@ -236,8 +271,8 @@ class ChessMove(Move):
         pieces_pos[row][col] = None
         col = self._new_position[0]
         row = self._new_position[1]
-        pieces_pos[col][row] = self._piece
-        self._piece.set_position((row, col))
+        pieces_pos[row][col] = self._piece
+        self._piece.set_position((col, row))
         new_pieces_pos = pieces_pos
         new_state = ChessState(self._state.get_current_player(), self._state.get_other_player(),
         self._state.get_tile_size(), new_pieces_pos)
