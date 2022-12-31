@@ -140,6 +140,14 @@ class Pawn(Piece):
         
         return available_moves
 
+    def __deepcopy__(self, memo):
+        return Pawn(self._type, self._color, 
+            self._size, self._position, self._points)
+
+    def __copy__(self, memo):
+        return Pawn(self._type, self._color, 
+            self._size, self._position, self._points)
+
 
 class Rook(Piece):
     def __init__(self, type: str, color: str, size, position: tuple, points: int = 5):
@@ -153,6 +161,14 @@ class Rook(Piece):
         available_moves = self._direction_moves(col, row, directions, rang, pieces_pos)
         return available_moves
 
+    def __deepcopy__(self, memo):
+        return Rook(self._type, self._color, 
+            self._size, self._position, self._points)
+
+    def __copy__(self, memo):
+        return Rook(self._type, self._color, 
+            self._size, self._position, self._points)
+
 
 class Bishop(Piece):
     def __init__(self, type: str, color: str, size, position: tuple, points: int = 3):
@@ -165,6 +181,14 @@ class Bishop(Piece):
         rang = [1,2,3,4,5,6,7]
         available_moves = self._direction_moves(col, row, directions, rang, pieces_pos)
         return available_moves
+
+    def __deepcopy__(self, memo):
+        return Bishop(self._type, self._color, 
+            self._size, self._position, self._points)
+
+    def __copy__(self, memo):
+        return Bishop(self._type, self._color, 
+            self._size, self._position, self._points)
 
 
 class Queen(Piece):
@@ -182,6 +206,14 @@ class Queen(Piece):
         available_moves = self._direction_moves(col, row, directions, rang, pieces_pos)
         return available_moves
 
+    def __deepcopy__(self, memo):
+        return Queen(self._type, self._color, 
+            self._size, self._position, self._points)
+
+    def __copy__(self, memo):
+        return Queen(self._type, self._color, 
+            self._size, self._position, self._points)
+
 
 class King(Piece):
     def get_moves(self, pieces_pos) -> list:
@@ -194,6 +226,14 @@ class King(Piece):
         rang = [1]
         available_moves = self._direction_moves(col, row, directions, rang, pieces_pos)
         return available_moves
+
+    def __deepcopy__(self, memo):
+        return King(self._type, self._color, 
+            self._size, self._position, self._points)
+
+    def __copy__(self, memo):
+        return King(self._type, self._color, 
+            self._size, self._position, self._points)
 
 
 class Knight(Piece):
@@ -222,3 +262,11 @@ class Knight(Piece):
                     else:
                         available_moves.append((move_col,move_row))
         return available_moves
+
+    def __deepcopy__(self, memo):
+        return Knight(self._type, self._color, 
+            self._size, self._position, self._points)
+
+    def __copy__(self, memo):
+        return Knight(self._type, self._color, 
+            self._size, self._position, self._points)

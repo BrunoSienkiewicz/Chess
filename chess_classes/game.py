@@ -39,11 +39,30 @@ class Game:
                 self.draw_current_board_state(self._state)
             p.display.flip()
 
+        # display winner
+        while True:
+            # get all events
+            events = p.event.get()
+            for event in events:
+                # make action for each event
+                if event.type == p.QUIT:
+                    sys.exit()
+                self.draw_current_board_state(self._state)
+            self.draw_winner(self._state.get_winner())
+            p.display.flip()
+
     def draw_current_board_state(self, state):
         """
         Draws current state of the game.
         """
         raise NotImplementedError
+
+    def draw_winner(self, player: Player):
+        font = p.font.Font('freesansbold.ttf', 32)
+        text = font.render(f'{player.name()} wins', True, p.Color('green'), p.Color('blue'))
+        textRect = text.get_rect()
+        textRect.center = (self._size // 2, self._size // 2)
+        self._window.blit(text, textRect)
 
     def make_action(self, event: p.event.Event=None):
         """
@@ -58,7 +77,6 @@ class Game:
         elif event.type == p.QUIT:
             self._done = True
             sys.exit()
-            
 
     def get_moves(self) -> Iterable[Move]:
         """

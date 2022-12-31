@@ -33,7 +33,7 @@ def test_standard_check():
 
 def test_check_cannot_capture():
     w_king = King('king', 'white', 100, (3,3))
-    b_queen = Queen('queen', 'black', 100, (2,3))
+    b_queen = Queen('queen', 'black', 100, (3,2))
     b_rook = Rook('rook', 'black', 100, (3,0))
 
     pieces_pos = [
@@ -59,13 +59,13 @@ def test_check_cannot_capture():
 
 def test_pinned():
     w_king = King('king', 'white', 100, (3,3))
-    w_queen = Queen('queen', 'white', 100, (2,3))
+    w_bishop = Bishop('bishop', 'white', 100, (3,2))
     b_rook = Rook('rook', 'black', 100, (3,0))
 
     pieces_pos = [
         [None, None, None, b_rook, None, None, None, None],
         [None, None, None, None, None, None, None, None],
-        [None, None, None, w_queen, None, None, None, None],
+        [None, None, None, w_bishop, None, None, None, None],
         [None, None, None, w_king, None, None, None, None],
         [None, None, None, None, None, None, None, None],
         [None, None, None, None, None, None, None, None],
@@ -76,12 +76,12 @@ def test_pinned():
     state = ChessState(Player('white', 'white'), Player('black', 'black'), 100, pieces_pos)
     state.is_in_check()
     assert state.in_check() == False
-    assert state.get_moves(3,2) == None
+    assert state.get_moves(3,2) == []
 
 
 def test_check_blocking():
     w_king = King('king', 'white', 100, (3,3))
-    w_queen = Queen('queen', 'white', 100, (2,5))
+    w_queen = Queen('queen', 'white', 100, (5,2))
     b_rook = Rook('rook', 'black', 100, (3,0))
 
     pieces_pos = [
@@ -100,9 +100,9 @@ def test_check_blocking():
     assert state.in_check() == True
 
     moves_list = [
-                    (3,0),(2,3)
+                    (3,2),(3,0)
                 ]
-    assert state.get_moves(2,5) == moves_list
+    assert state.get_moves(5,2) == moves_list
 
 
 def test_check_in_available_moves():
@@ -146,7 +146,30 @@ def test_checkmate():
     ]
     state = ChessState(Player('white', 'white'), Player('black', 'black'), 100, pieces_pos)
     state.is_in_check()
-    assert state.get_moves(0,7) == None
+    assert state.get_moves(0,7) == []
     assert state.in_check() == True
     assert state.is_finished() == True
-    assert state.get_winner() == Player('black', 'black')
+    assert state.get_winner() == state.get_other_player()
+
+
+def test_stalemate():
+    w_king = King('king', 'white', 100, (0,7))
+    b_queen = Queen('queen', 'black', 100, (2,6))
+
+    pieces_pos = [
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, b_queen, None, None, None, None, None],
+        [w_king, None, None, None, None, None, None, None]
+    ]
+
+    state = ChessState(Player('white', 'white'), Player('black', 'black'), 100, pieces_pos)
+    state.is_in_check()
+    assert state.get_moves(0,7) == []
+    assert state.in_check() == False
+    assert state.is_finished() == True
+    assert state.get_winner() == None

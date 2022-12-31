@@ -213,6 +213,7 @@ class ChessState(State):
                     player_color = self.get_current_player().color()
                     piece_moves = piece.get_moves(pieces_pos)
                     if piece.get_color() != player_color and king_pos in piece_moves:
+                        pass
                         return True
         return False
 
@@ -229,12 +230,14 @@ class ChessState(State):
         piece: Piece = self._pieces_pos[row][col]
         if piece:
             moves = piece.get_moves(self._pieces_pos)
-            for move in moves:
+            moves_copy = copy(moves)
+            for move in moves_copy:
                 simulated_pieces_pos = deepcopy(self._pieces_pos)
                 simulated_piece = deepcopy(piece)
                 simulated_state = ChessState(self._current_player, self._other_player, self._tile_size, simulated_pieces_pos)
                 simulated_state = ChessMove(simulated_state, simulated_piece, move).make_move()
-                if simulated_state.is_in_check():
+                pass
+                if simulated_state.in_check():
                     moves.remove(move)
             return moves
 
@@ -244,6 +247,21 @@ class ChessState(State):
     def make_move(self, move: Move) -> 'State':
         new_state = move.make_move()
         return new_state
+
+    def get_winner(self) -> Optional[Player]:
+        winner = None
+        if self._in_check:
+            king_pos = self.get_current_player_king_pos()
+            moves = self.get_moves(king_pos[0], king_pos[1])
+            if moves == []:
+                winner = self._other_player
+        return winner
+
+    def is_finished(self) -> bool:
+        if self.get_winner:
+            self._done = True
+            return True
+        return False
 
     def __str__(self) -> str:
         board_str = ""
