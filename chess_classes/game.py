@@ -30,7 +30,7 @@ class Game:
         """
         Launches game.
         """
-        while not self._state.done():
+        while not self.is_finished():
             # get all events
             events = p.event.get()
             for event in events:
@@ -48,6 +48,7 @@ class Game:
                 if event.type == p.QUIT:
                     sys.exit()
                 self.draw_current_board_state(self._state)
+            print(self._state.get_winner())
             self.draw_winner(self._state.get_winner())
             p.display.flip()
 

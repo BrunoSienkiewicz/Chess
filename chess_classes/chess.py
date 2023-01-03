@@ -83,7 +83,6 @@ class Chess(Game):
         """
         self._draw_board()
         self._draw_pieces(state)
-        print(state)
         p.display.flip()
 
     # private methods
@@ -120,7 +119,6 @@ class Chess(Game):
 
         # get mouse position and check for pieces on this position
         col, row = self._get_mouse_pos()
-        print(col, row)
         pieces_pos = self._state.get_pieces_pos()
         piece = pieces_pos[row][col]
 
@@ -135,7 +133,6 @@ class Chess(Game):
 
             # check if given finishing position is in available moves
             if finishing_position in available_moves:
-                print("xddd")
                 # make move
                 move = ChessMove(self._state, piece, finishing_position)
                 new_state = self._state.make_move(move)
@@ -149,7 +146,7 @@ class Chess(Game):
         Returns:
             Players desired piece position.
         """
-        while not self._state.done():
+        while not self.is_finished():
             events = p.event.get()
             for event in events:
                 if event.type == p.MOUSEBUTTONDOWN:
@@ -185,11 +182,7 @@ class ChessState(State):
         self._other_player = other_player
         self._tile_size = tile_size
         self._pieces_pos = pieces_pos
-        self._done = False
         self._in_check = self.is_in_check()
-
-    def done(self):
-        return self._done
 
     def in_check(self):
         return self._in_check
@@ -258,8 +251,7 @@ class ChessState(State):
         return winner
 
     def is_finished(self) -> bool:
-        if self.get_winner:
-            self._done = True
+        if self.get_winner():
             return True
         return False
 

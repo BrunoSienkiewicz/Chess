@@ -152,6 +152,7 @@ class Pawn(Piece):
 class Rook(Piece):
     def __init__(self, type: str, color: str, size, position: tuple, points: int = 5):
         super().__init__(type, color, size, position, points)
+        self._can_castle = True
     
     def get_moves(self, pieces_pos) -> list:
         col = self._position[0]
@@ -159,7 +160,14 @@ class Rook(Piece):
         directions = [(1,0),(-1,0),(0,1),(0,-1)]
         rang = [1,2,3,4,5,6,7]
         available_moves = self._direction_moves(col, row, directions, rang, pieces_pos)
+
+        if self._starting_position != self._position:
+            self._can_castle = False
+
         return available_moves
+
+    def can_castle(self):
+        return self._can_castle
 
     def __deepcopy__(self, memo):
         return Rook(self._type, self._color, 
@@ -216,6 +224,10 @@ class Queen(Piece):
 
 
 class King(Piece):
+    def __init__(self, type: str, color: str, size, position: tuple, points: int = 0):
+        super().__init__(type, color, size, position, points)
+        self._can_castle = True
+
     def get_moves(self, pieces_pos) -> list:
         col = self._position[0]
         row = self._position[1]
@@ -225,7 +237,32 @@ class King(Piece):
         ]
         rang = [1]
         available_moves = self._direction_moves(col, row, directions, rang, pieces_pos)
+
+        if self._starting_position != self._position:
+            self._can_castle = False
+
+        if self._can_castle:
+            if self.can_castle(pieces_pos, -1):
+                available_moves.append((col-2,row))
+            if self.can_castle(pieces_pos, 1):
+                available_moves.append((col+2,row))
+        
         return available_moves
+
+    def can_castle(self, pieces_pos, dir):
+        row = self._position[1]
+        col = self._position[0]
+
+        for i in range(1,8):
+            if col+i*dir > 7 or col+i*dir < 0:
+                break
+            if pieces_pos[row][col+i*dir]:
+                pass
+                piece: Piece = pieces_pos[row][col+i*dir]
+                if piece.get_type() != 'rook':
+                    break
+                if piece.can_castle() == True:
+                    return True
 
     def __deepcopy__(self, memo):
         return King(self._type, self._color, 
