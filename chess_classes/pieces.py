@@ -263,6 +263,16 @@ class King(Piece):
                     break
                 if piece.can_castle() == True:
                     return True
+        return False
+
+    def get_castle_rook(self, pieces_pos, dir):
+        row = self._position[1]
+        col = self._position[0]
+
+        for i in range(1,8):
+            if pieces_pos[row][col+i*dir]:
+                piece: Piece = pieces_pos[row][col+i*dir]
+                return piece
 
     def __deepcopy__(self, memo):
         return King(self._type, self._color, 

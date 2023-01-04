@@ -50,7 +50,6 @@ class Game:
                 self.draw_current_board_state(self._state)
             print(self._state.get_winner())
             self.draw_winner(self._state.get_winner())
-            p.display.flip()
 
     def draw_current_board_state(self, state):
         """
@@ -60,10 +59,14 @@ class Game:
 
     def draw_winner(self, player: Player):
         font = p.font.Font('freesansbold.ttf', 32)
-        text = font.render(f'{player.name()} wins', True, p.Color('green'), p.Color('blue'))
+        if player:
+            text = font.render(f'{player.name()} wins', True, p.Color('green'), p.Color('blue'))
+        else:
+            text = font.render(f'Draw', True, p.Color('green'), p.Color('blue'))
         textRect = text.get_rect()
         textRect.center = (self._size // 2, self._size // 2)
         self._window.blit(text, textRect)
+        p.display.flip()
 
     def make_action(self, event: p.event.Event=None):
         """

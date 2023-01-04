@@ -251,7 +251,12 @@ class ChessState(State):
         return winner
 
     def is_finished(self) -> bool:
+        king_pos = self.get_current_player_king_pos()
+        king = self._pieces_pos[king_pos[1]][king_pos[0]]
+        king_moves = self.get_moves(king_pos[0], king_pos[1])
         if self.get_winner():
+            return True
+        if king_moves != king.get_moves(self._pieces_pos) and king_moves == []:
             return True
         return False
 
@@ -272,13 +277,23 @@ class ChessMove(Move):
     def __init__(self, state, piece, new_position):
         self._piece = piece
         super().__init__(state, new_position)
+        self._castle_move, self._dir = self._check_castle_move()
 
     def make_move(self) -> State:
         pieces_pos = self._state.get_pieces_pos()
         starting_position = self._piece.get_position()
         col = starting_position[0]
         row = starting_position[1]
-        pieces_pos[row][col] = None
+        if self._castle_move:
+            rook: Rook = self._piece.get_castle_rook(pieces_pos, self._dir)
+            rook_pos = rook.get_position()
+            rook_col = rook_pos[0]
+            rook_row = rook_pos[1]
+            rook.set_position((col+self._dir, row))
+            pieces_pos[row][col+self._dir] = rook
+            pieces_pos[rook_row][rook_col] = None
+        else:
+            pieces_pos[row][col] = None
         col = self._new_position[0]
         row = self._new_position[1]
         pieces_pos[row][col] = self._piece
@@ -287,3 +302,13 @@ class ChessMove(Move):
         new_state = ChessState(self._state.get_current_player(), self._state.get_other_player(),
         self._state.get_tile_size(), new_pieces_pos)
         return new_state
+
+    def _check_castle_move(self):
+        piece_type = self._piece.get_type()
+        if piece_type == 'king':
+            starting_position = self._piece.get_position()
+            col = starting_position[0]
+            diff = self._new_position[0] - col
+            if abs(diff) == 2:
+                return True, int(diff/abs(diff))
+        return False, 1

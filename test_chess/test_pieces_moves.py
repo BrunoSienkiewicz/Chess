@@ -503,14 +503,42 @@ def test_king_cannot_castle():
         [None, None, None, None, None, None, None, None],
         [None, None, None, None, None, None, None, None]
     ]
+    king.get_moves(pieces_pos)
     moves_list = [
                     (4,3),(2,3),(3,4),(3,2),
                     (4,4),(2,4),(4,2),(2,2)
                 ]
     
-    assert king.can_castle(pieces_pos,1) == False
+    assert king._can_castle == False
+    assert king.get_moves(pieces_pos) == moves_list
+
+
+def test_king_cannot_castle_blocked():
+    king = King('king', 'black', 100, (4,3))
+    l_rook = Rook('rook', 'black', 100, (0,3))
+    r_rook = Rook('rook', 'black', 100, (7,3))
+    queen = Queen('queen', 'black', 100, (3,4))
+    pieces_pos = [
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [l_rook, None, None, queen, king, None, None, r_rook],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None],
+        [None, None, None, None, None, None, None, None]
+    ]
+
+    moves_list = [
+                    (5,3),(4,4),(4,2),
+                    (5,4),(3,4),(5,2),(3,2),
+                    (6,3)
+                ]
+    
+    assert king.can_castle(pieces_pos,1) == True
     assert king.can_castle(pieces_pos,-1) == False
     assert king.get_moves(pieces_pos) == moves_list
+
 
 
 def test_king_can_castle_one_side():

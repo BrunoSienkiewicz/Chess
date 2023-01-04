@@ -144,6 +144,9 @@ def test_check_in_castle():
         [None, None, None, None, None, None, None, None],
         [None, None, None, None, None, None, None, None]
     ]
+    state = ChessState(Player('white', 'white'), Player('black', 'black'), 100, pieces_pos)
+    state.is_in_check()
+    assert state.in_check() == False
     moves_list = [
                     (5,3),(3,3),(4,4),(4,2),
                     (5,4),(3,4),(5,2),(3,2),
@@ -152,7 +155,7 @@ def test_check_in_castle():
     
     assert king.can_castle(pieces_pos,1) == True
     assert king.can_castle(pieces_pos,-1) == True
-    assert king.get_moves(pieces_pos) == moves_list
+    assert state.get_moves(4,3) == moves_list
 
 
 
