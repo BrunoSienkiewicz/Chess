@@ -9,5 +9,5 @@ from chess_classes.state import State
 from chess_classes.chess import ChessState, ChessMove, Chess
 
 
-chess = Chess()
+chess = Chess(600,150,Player('player1','white'),Player('player2','black'),'red','green')
 chess.play()

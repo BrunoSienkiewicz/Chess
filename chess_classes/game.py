@@ -40,6 +40,8 @@ class Game:
             p.display.flip()
 
         # display winner
+        print(self._state.get_winner())
+        self.draw_winner(self._state.get_winner())
         while True:
             # get all events
             events = p.event.get()
@@ -47,9 +49,7 @@ class Game:
                 # make action for each event
                 if event.type == p.QUIT:
                     sys.exit()
-                self.draw_current_board_state(self._state)
-            print(self._state.get_winner())
-            self.draw_winner(self._state.get_winner())
+                # self.draw_current_board_state(self._state)
 
     def draw_current_board_state(self, state):
         """

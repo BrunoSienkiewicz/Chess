@@ -83,6 +83,7 @@ class Chess(Game):
         """
         self._draw_board()
         self._draw_pieces(state)
+        self._draw_score()
         p.display.flip()
 
     # private methods
@@ -112,6 +113,20 @@ class Chess(Game):
                 if piece:
                     piece.draw_piece(self._window)
 
+    def _draw_score(self):
+        player = self._first_player
+        font = p.font.Font('freesansbold.ttf', self._margin//10)
+        text = font.render(f'{player.name()} has {player.score()} points', True, self._secondary_color, self._primary_color)
+        textRect = text.get_rect()
+        textRect.center = (self._size + self._margin // 2, self._size - 50)
+        self._window.blit(text, textRect)
+        player = self._second_player
+        font = p.font.Font('freesansbold.ttf', self._margin//10)
+        text = font.render(f'{player.name()} has {player.score()} points', True, self._secondary_color, self._primary_color)
+        textRect = text.get_rect()
+        textRect.center = (self._size + self._margin // 2, 50)
+        self._window.blit(text, textRect)
+
     def _move_piece(self):
         """
         Moves piece to mouse position.
@@ -137,6 +152,8 @@ class Chess(Game):
                 move = ChessMove(self._state, piece, finishing_position)
                 new_state = self._state.make_move(move)
                 new_state.swap_players()
+                in_check = new_state.is_in_check()
+                new_state.set_in_check(in_check)
 
                 # update state
                 self.set_state(new_state)
@@ -228,7 +245,7 @@ class ChessState(State):
                 simulated_pieces_pos = deepcopy(self._pieces_pos)
                 simulated_piece = deepcopy(piece)
                 simulated_state = ChessState(self._current_player, self._other_player, self._tile_size, simulated_pieces_pos)
-                simulated_state = ChessMove(simulated_state, simulated_piece, move).make_move()
+                simulated_state, captured_piece = ChessMove(simulated_state, simulated_piece, move).make_move()
                 pass
                 if simulated_state.in_check():
                     moves.remove(move)
@@ -238,7 +255,11 @@ class ChessState(State):
         self._pieces_pos = new_pieces_pos
 
     def make_move(self, move: Move) -> 'State':
-        new_state = move.make_move()
+        new_state, captured_piece = move.make_move()
+        if captured_piece:
+            piece_points = captured_piece.get_points()
+            current_player = new_state.get_current_player()
+            current_player.set_score(current_player.score()+piece_points)
         return new_state
 
     def get_winner(self) -> Optional[Player]:
@@ -296,12 +317,13 @@ class ChessMove(Move):
             pieces_pos[row][col] = None
         col = self._new_position[0]
         row = self._new_position[1]
+        captured_piece = pieces_pos[row][col]
         pieces_pos[row][col] = self._piece
         self._piece.set_position((col, row))
         new_pieces_pos = pieces_pos
         new_state = ChessState(self._state.get_current_player(), self._state.get_other_player(),
         self._state.get_tile_size(), new_pieces_pos)
-        return new_state
+        return new_state, captured_piece
 
     def _check_castle_move(self):
         piece_type = self._piece.get_type()

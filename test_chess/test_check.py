@@ -144,7 +144,7 @@ def test_check_in_castle():
         [None, None, None, None, None, None, None, None],
         [None, None, None, None, None, None, None, None]
     ]
-    state = ChessState(Player('white', 'white'), Player('black', 'black'), 100, pieces_pos)
+    state = ChessState(Player('black', 'black'), Player('white', 'white'), 100, pieces_pos)
     state.is_in_check()
     assert state.in_check() == False
     moves_list = [

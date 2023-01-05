@@ -28,3 +28,6 @@ class Player:
 
     def set_score(self, new_score):
         self._score = new_score
+
+    def __deepcopy__(self):
+        return Player(self._name, self._color, self._score)
