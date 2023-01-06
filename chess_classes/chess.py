@@ -215,16 +215,9 @@ class ChessState(State):
 
     def is_in_check(self):
         king_pos = self.get_current_player_king_pos()
-        for row in range(8):
-            for col in range(8):
-                pieces_pos = self._pieces_pos
-                piece = self._pieces_pos[row][col]
-                if piece:
-                    player_color = self.get_current_player().color()
-                    piece_moves = piece.get_moves(pieces_pos)
-                    if piece.get_color() != player_color and king_pos in piece_moves:
-                        pass
-                        return True
+        other_player_moves = self.get_all_player_moves(self._other_player)
+        if king_pos in other_player_moves:
+            return True
         return False
 
     def get_current_player_king_pos(self):
@@ -239,17 +232,24 @@ class ChessState(State):
     def get_moves(self, col, row):
         piece: Piece = self._pieces_pos[row][col]
         if piece:
-            moves = piece.get_moves(self._pieces_pos)
-            moves_copy = copy(moves)
-            for move in moves_copy:
-                simulated_pieces_pos = deepcopy(self._pieces_pos)
-                simulated_piece = deepcopy(piece)
-                simulated_state = ChessState(self._current_player, self._other_player, self._tile_size, simulated_pieces_pos)
-                simulated_state, captured_piece = ChessMove(simulated_state, simulated_piece, move).make_move()
-                pass
-                if simulated_state.in_check():
-                    moves.remove(move)
-            return moves
+            return self.get_piece_legal_moves(piece)
+
+    def get_piece_legal_moves(self, piece):
+        moves = piece.get_moves(self._pieces_pos)
+        moves_copy = copy(moves)
+        for move in moves_copy:
+            if self.piece_move_results_in_check(piece, move):
+                moves.remove(move)
+        return moves
+
+    def piece_move_results_in_check(self, piece, move):
+        simulated_pieces_pos = deepcopy(self._pieces_pos)
+        simulated_piece = deepcopy(piece)
+        simulated_state = ChessState(self._current_player, self._other_player, self._tile_size, simulated_pieces_pos)
+        simulated_state, captured_piece = ChessMove(simulated_state, simulated_piece, move).make_move()
+        if simulated_state.in_check():
+            return True
+        return False
 
     def set_pieces_pos(self, new_pieces_pos):
         self._pieces_pos = new_pieces_pos
@@ -272,14 +272,41 @@ class ChessState(State):
         return winner
 
     def is_finished(self) -> bool:
-        king_pos = self.get_current_player_king_pos()
-        king = self._pieces_pos[king_pos[1]][king_pos[0]]
-        king_moves = self.get_moves(king_pos[0], king_pos[1])
+        pass
         if self.get_winner():
             return True
-        if king_moves != king.get_moves(self._pieces_pos) and king_moves == []:
-            return True
-        return False
+        player_pieces = self.get_all_player_pieces(self._current_player)
+        for piece in player_pieces:
+            moves = self.get_piece_legal_moves(piece)
+            if moves != []:
+                return False
+        return True
+
+    def get_all_player_moves(self, player: Player):
+        player_color = player.color()
+        player_moves = []
+        for row in range(8):
+            for col in range(8):
+                pieces_pos = self._pieces_pos
+                piece = self._pieces_pos[row][col]
+                if piece:
+                    piece_moves = piece.get_moves(pieces_pos)
+                    if piece.get_color() == player_color:
+                        for move in piece_moves:
+                            player_moves.append(move)
+        return player_moves
+
+    def get_all_player_pieces(self, player):
+        player_color = player.color()
+        player_pieces = []
+        for row in range(8):
+            for col in range(8):
+                pieces_pos = self._pieces_pos
+                piece = self._pieces_pos[row][col]
+                if piece:
+                    if piece.get_color() == player_color:
+                        player_pieces.append(piece)
+        return player_pieces
 
     def __str__(self) -> str:
         board_str = ""
