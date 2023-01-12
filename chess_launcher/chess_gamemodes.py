@@ -98,7 +98,3 @@ class FischerChess(Chess):
         ]
         state = ChessState(self._first_player, self._second_player, self._tile_size, pieces_pos)
         self._state = state
-
-
-chess = FischerChess()
-chess.play()
