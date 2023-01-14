@@ -10,6 +10,15 @@ from chess_classes.state import State
 
 class Piece():
     def __init__(self, type: str, color: str, size, position: tuple, points: int=0):
+        """
+        Initalizes piece object
+
+        Parameters:
+            type: type of the piece (for example Queen)
+            color: color of the piece
+            position: position of the piece
+            points: points given to player who captures this piece
+        """
         self._project_root = Path(__file__).parent.parent
         if type == "":
             raise TypeError('Piece must have type')
@@ -46,11 +55,17 @@ class Piece():
         self._position = new_position
     
     def draw_piece(self, window):
+        """
+        Draws piece on the board
+        """
         col = self._position[0]
         row = self._position[1]
         window.blit(self._image, p.Rect(col * self._size, row * self._size, self._size, self._size))
 
     def get_moves(self, pieces_pos) -> list:
+        """
+        Gets piece moves
+        """
         available_moves = []
         for col in range(8):
             for row in range(8):
@@ -63,11 +78,24 @@ class Piece():
     # private methods
 
     def _in_bounds(self, col, row):
+        """
+        Checks if move is in bounds
+        """
         if col > 7 or col < 0 or row > 7 or row <0:
             return False
         return True
 
     def _direction_moves(self, col, row, directions, rang, pieces_pos):
+        """
+        Gets list of moves for given directions
+
+        Parameters:
+            col: column of the piece
+            row: row of the piece
+            directions: directions of the move
+            rang: range of direction
+            pieces_pos: pieces current position on the board
+        """
         available_moves = []
         for direction in directions:
             for i in rang:

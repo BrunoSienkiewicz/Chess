@@ -72,6 +72,9 @@ class Chess(Game):
     def make_action(self, event: p.event.Event = None):
         """
         Makes action on given event.
+
+        Parameters:
+            event: given pygame event
         """
         if event.type == p.MOUSEBUTTONDOWN:
             self._move_piece()
@@ -80,6 +83,9 @@ class Chess(Game):
     def draw_current_board_state(self, state):
         """
         Draws given board state on the screen.
+
+        Parameters:
+            state: current game state
         """
         self._draw_board()
         self._draw_pieces(state)
@@ -105,6 +111,9 @@ class Chess(Game):
     def _draw_pieces(self, state: State):
         """
         Draws pieces on the board on given positions.
+
+        Parameters:
+            state: current game state
         """
         board = state.get_pieces_pos()
         for row in range(8):
@@ -114,12 +123,19 @@ class Chess(Game):
                     piece.draw_piece(self._window)
 
     def _draw_score(self):
+        """
+        Draws player scores
+        """
+
+        # first player score
         player = self._first_player
         font = p.font.Font('freesansbold.ttf', self._margin//10)
         text = font.render(f'{player.name()} has {player.score()} points', True, self._secondary_color, self._primary_color)
         textRect = text.get_rect()
         textRect.center = (self._size + self._margin // 2, self._size - 50)
         self._window.blit(text, textRect)
+
+        # second player score
         player = self._second_player
         font = p.font.Font('freesansbold.ttf', self._margin//10)
         text = font.render(f'{player.name()} has {player.score()} points', True, self._secondary_color, self._primary_color)
@@ -195,6 +211,15 @@ class Chess(Game):
 
 class ChessState(State):
     def __init__(self, current_player, other_player, tile_size, pieces_pos):
+        """
+        Initializes chess state.
+
+        Parameters:
+            current_player: player that is making a move
+            other_player: player that just made a move
+            tile size: size of a single tile
+            pieces_pos: current pieces position on the board
+        """
         self._current_player = current_player
         self._other_player = other_player
         self._tile_size = tile_size
@@ -214,6 +239,13 @@ class ChessState(State):
         self._in_check = in_check
 
     def is_in_check(self):
+        """
+        Checks if current player is in check
+
+        Returns:
+            True if player is in check
+            False if player is not in check
+        """
         king_pos = self.get_current_player_king_pos()
         other_player_moves = self.get_all_player_moves(self._other_player)
         if king_pos in other_player_moves:
@@ -221,6 +253,13 @@ class ChessState(State):
         return False
 
     def get_current_player_king_pos(self):
+        """
+        Gets current players king position
+
+        Returns:
+            col: kings column
+            row: kings row
+        """
         for row in range(8):
             for col in range(8):
                 piece = self._pieces_pos[row][col]
@@ -230,11 +269,30 @@ class ChessState(State):
                         return col, row
 
     def get_moves(self, col, row):
+        """
+        Gets piece moves
+
+        Parameters:
+            col: piece column
+            row: piece row
+
+        Returns:
+            list of all available moves for given piece
+        """
         piece: Piece = self._pieces_pos[row][col]
         if piece:
             return self.get_piece_legal_moves(piece)
 
     def get_piece_legal_moves(self, piece):
+        """
+        Gets piece legal moves
+
+        Parameters:
+            piece: given piece
+
+        Returns:
+            filtered piece moves
+        """
         moves = piece.get_moves(self._pieces_pos)
         moves_copy = copy(moves)
         for move in moves_copy:
@@ -243,6 +301,9 @@ class ChessState(State):
         return moves
 
     def piece_move_results_in_check(self, piece, move):
+        """
+        Checks if given piece move results in check
+        """
         simulated_pieces_pos = deepcopy(self._pieces_pos)
         simulated_piece = deepcopy(piece)
         simulated_state = ChessState(self._current_player, self._other_player, self._tile_size, simulated_pieces_pos)
@@ -255,6 +316,15 @@ class ChessState(State):
         self._pieces_pos = new_pieces_pos
 
     def make_move(self, move: Move) -> 'State':
+        """
+        Makes piece move
+
+        Parameters:
+            move: move to make
+
+        Returns:
+            State after the move
+        """
         new_state, captured_piece = move.make_move()
         if captured_piece:
             piece_points = captured_piece.get_points()
@@ -263,6 +333,13 @@ class ChessState(State):
         return new_state
 
     def get_winner(self) -> Optional[Player]:
+        """
+        Gets winner
+
+        Returns:
+            None if none player of the players won or is stalemate.
+            Player if one of the players won
+        """
         winner = None
         if self._in_check:
             king_pos = self.get_current_player_king_pos()
@@ -272,7 +349,9 @@ class ChessState(State):
         return winner
 
     def is_finished(self) -> bool:
-        pass
+        """
+        Checks if the game is finished
+        """
         if self.get_winner():
             return True
         player_pieces = self.get_all_player_pieces(self._current_player)
@@ -282,7 +361,16 @@ class ChessState(State):
                 return False
         return True
 
-    def get_all_player_moves(self, player: Player):
+    def get_all_player_moves(self, player: Player) -> list:
+        """
+        Gets all of the given player pieces moves
+
+        Parameters:
+            player: Player class
+
+        Returns:
+            list of all player pieces moves
+        """
         player_color = player.color()
         player_moves = []
         for row in range(8):
@@ -296,7 +384,10 @@ class ChessState(State):
                             player_moves.append(move)
         return player_moves
 
-    def get_all_player_pieces(self, player):
+    def get_all_player_pieces(self, player: Player) -> list:
+        """
+        Gets all of the player pieces
+        """
         player_color = player.color()
         player_pieces = []
         for row in range(8):
@@ -323,11 +414,25 @@ class ChessState(State):
 
 class ChessMove(Move):
     def __init__(self, state, piece, new_position):
+        """
+        Initalizes chess move
+
+        Parameters:
+            state: given game state
+            piece: piece to make move with
+            new_position: piece position aftet the move
+        """
         self._piece = piece
         super().__init__(state, new_position)
         self._castle_move, self._dir = self._check_castle_move()
 
     def make_move(self) -> State:
+        """
+        Makes piece move
+
+        Returns:
+            state after the move and captured piece (None if none was captured)
+        """
         pieces_pos = self._state.get_pieces_pos()
         starting_position = self._piece.get_position()
         col = starting_position[0]
@@ -353,6 +458,13 @@ class ChessMove(Move):
         return new_state, captured_piece
 
     def _check_castle_move(self):
+        """
+        Checks if piece can castle
+
+        Returns:
+            True and direction of castling if can castle
+            False if cannot castle
+        """
         piece_type = self._piece.get_type()
         if piece_type == 'king':
             starting_position = self._piece.get_position()

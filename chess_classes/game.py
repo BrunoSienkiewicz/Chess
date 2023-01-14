@@ -58,6 +58,9 @@ class Game:
         raise NotImplementedError
 
     def draw_winner(self, player: Player):
+        """
+        Draws winner message on the screen
+        """
         font = p.font.Font('freesansbold.ttf', 32)
         if player:
             text = font.render(f'{player.name()} wins', True, p.Color('green'), p.Color('blue'))
